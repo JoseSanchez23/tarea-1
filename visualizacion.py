@@ -84,7 +84,7 @@ def plot_pattern_evolution(game, n_frames=6, title="Es la evolución del patrón
     rows = (n_frames + cols - 1) // cols
     fig, axes = plt.subplots(rows, cols, figsize=(cols * 3, rows * 3))
     fig.suptitle(title, fontsize=15, fontweight="bold", y=1.01)
-    fig.patch.set_facecolor("#f5f5f5")
+    fig.patch.set_facecolor("#f7f7f7")
 
     axes = axes.flatten()
 

@@ -1,39 +1,25 @@
-"""
-Tarea 1: Juego de la Vida de Conway
-Módulo de medición de rendimiento y complejidad empírica.
-
-Varía el tamaño de la grilla y mide el tiempo promedio por iteración,
-luego genera gráficas comparativas con curvas teóricas de complejidad.
-
-Autor: [Tu nombre]
-Fecha: 2026-05-20
-"""
-
 import numpy as np
 import matplotlib.pyplot as plt
 import time
 
 from game_of_life import GameOfLife
 
-
-# ─────────────────────────────────────────────
 # 1. Función de benchmark
 # ─────────────────────────────────────────────
 
 def benchmark(sizes, repetitions=5, steps_per_run=10):
     """
-    Mide el tiempo promedio de ejecución por iteración para distintos
-    tamaños de grilla.
+    Esto mide el tiempo promedio de ejecución por iteración para los distintos tamaños de grilla
 
-    Parámetros:
-        sizes         : lista de tamaños N para grillas N×N.
-        repetitions   : cuántas veces repetir cada prueba (para promediar).
-        steps_per_run : pasos por ejecución en cada repetición.
+    Los parámetros son:
+        sizes: es la lista de tamaños N para grillas N*N.
+        repetitions: cuántas veces se va a repetir cada prueba con el fin de promediar
+        steps_per_run: son los pasos por ejecución en cada repetición
 
-    Retorna:
-        n_cells   (list): número total de celdas (N*N) por tamaño.
-        avg_times (list): tiempo promedio por iteración (segundos).
-        std_times (list): desviación estándar del tiempo por iteración.
+    Regresa:
+        n_cells (list): es el número total de celdas N*N por tamaño
+        avg_times (list): es el tiempo promedio por iteración (los segundos)
+        std_times (list): es la desv. estándar del tiempo por cada iteración
     """
     n_cells    = []
     avg_times  = []
@@ -43,66 +29,62 @@ def benchmark(sizes, repetitions=5, steps_per_run=10):
     print("-" * 52)
 
     for N in sizes:
-        times_per_iter = []
+        times_per_iter = [] #Es la lista donde se va a guardar el tiempo promedio por iteración para cada repetición
 
         for _ in range(repetitions):
-            game = GameOfLife(N, N)  # nuevo estado aleatorio cada vez
-            start = time.perf_counter()
-            game.run(steps_per_run)
-            elapsed = time.perf_counter() - start
-            # Tiempo promedio por iteración en esta repetición
+            game = GameOfLife(N, N)  #nuevo estado aleatorio cada vez
+            start = time.perf_counter() #se encarga de guardar el estado inicial antes de ejecutar
+            game.run(steps_per_run) #ejecuta simulación por x cantidad de pasos
+            elapsed = time.perf_counter() - start #cuánto duró la simulación
+            #tiempo promedio por iteración en esta repetición
             times_per_iter.append(elapsed / steps_per_run)
 
-        mean_t = np.mean(times_per_iter)
-        std_t  = np.std(times_per_iter)
+        mean_t = np.mean(times_per_iter) #tiempo promedio total entre todas las repeticiones
+        std_t  = np.std(times_per_iter) #desv. standar con el fin de medir cuanto cambian los tiempos que se obtuvieron
 
-        n_cells.append(N * N)
-        avg_times.append(mean_t)
-        std_times.append(std_t)
+        n_cells.append(N * N) #guarda cant total de celulas de la grilla
+        avg_times.append(mean_t) #guarda tiempo promedio
+        std_times.append(std_t) #guarda desv. estandar
 
         print(
             f"{N:>7}×{N:<3}  {N*N:>10,}  "
             f"{mean_t * 1000:>14.4f}  {std_t * 1000:>10.4f}"
         )
 
-    return n_cells, avg_times, std_times
+    return n_cells, avg_times, std_times #retorna listas con resultados obtenidos
 
 
-# ─────────────────────────────────────────────
 # 2. Curvas teóricas de referencia
 # ─────────────────────────────────────────────
 
 def theoretical_curves(n_cells, avg_times):
     """
-    Genera curvas teóricas escaladas al primer punto de datos para
-    comparación visual.
+    Se generan las curvas teóricas escaladas al primer punto de datos para una comparación visual
 
-    Retorna un dict {nombre: array de tiempos teóricos}.
+    Luego retorna un dict {nombre: array de tiempos teóricos}
     """
     n = np.array(n_cells, dtype=float)
-    t0 = avg_times[0]  # ancla al primer punto
+    t0 = avg_times[0]  #ancla al primer punto
     n0 = n[0]
 
     curves = {
-        "O(n)":       t0 * (n / n0),
-        "O(n log n)": t0 * (n * np.log(n)) / (n0 * np.log(n0)),
-        "O(n²)":      t0 * (n / n0) ** 2,
+        "O(n)":t0 * (n / n0), #el tiempo crece proporcionalmente al tamaño
+        "O(n log n)": t0 * (n * np.log(n)) / (n0 * np.log(n0)), #crecimiento + rápido que linea sin embargo - a cuadratico
+        "O(n²)": t0 * (n / n0) ** 2, #tiempo aumenta mucho mas rapido 
     }
     return curves
 
-
-# ─────────────────────────────────────────────
 # 3. Gráficas de rendimiento
 # ─────────────────────────────────────────────
 
 def plot_performance(n_cells, avg_times, std_times, save_path=None):
     """
-    Genera dos gráficas:
-      (a) Escala lineal: tiempo vs celdas con curvas teóricas.
-      (b) Escala log-log: para identificar el orden de complejidad.
+    Se generan 2 gráficas:
+      (a) Escala lineal: es el tiempo vs las celdas con curvas teóricas
+      (b) Escala log-log: para identificar el orden de complejidad
     """
     n   = np.array(n_cells)
-    t   = np.array(avg_times) * 1000   # pasar a milisegundos
+    t   = np.array(avg_times) * 1000   #pasar a milisegundos
     std = np.array(std_times) * 1000
 
     curves = theoretical_curves(n_cells, avg_times)
@@ -113,42 +95,83 @@ def plot_performance(n_cells, avg_times, std_times, save_path=None):
         fontsize=14, fontweight="bold"
     )
 
-    # Colores para las curvas teóricas
+    #colores para las curvas teóricas
     colors = {"O(n)": "#2ca02c", "O(n log n)": "#ff7f0e", "O(n²)": "#d62728"}
 
-    # ── (a) Escala lineal ──────────────────────────────────────────────
+    #(a) Escala lineal-----
     ax = axes[0]
+
+    #grafica los tiempos medidos experimentalmente usando barras de error (desv estandar)
     ax.errorbar(
         n, t, yerr=std,
-        fmt="o-", color="#1f77b4", linewidth=2, markersize=6,
-        label="Medición empírica", capsize=4, zorder=5
+        fmt="o-", 
+        color="#1f77b4", 
+        linewidth=2, 
+        markersize=6,
+        label="Medición empírica", 
+        capsize=4, #tamaño de las barras de error
+        zorder=5 #prioridad visual
     )
-    for name, curve in curves.items():
-        ax.plot(n, curve * 1000, linestyle="--",
-                color=colors[name], label=name, alpha=0.8)
 
-    ax.set_xlabel("Número de celdas (N×N)", fontsize=11)
-    ax.set_ylabel("Tiempo promedio por iteración (ms)", fontsize=11)
+    #grafica curvas teoricas
+    for name, curve in curves.items():
+        ax.plot(
+            n, 
+            curve * 1000, 
+            linestyle="--",
+            color=colors[name], 
+            label=name, 
+            alpha=0.8
+        )
+    
+    #etiqueta eje x
+    ax.set_xlabel(
+        "Número de celdas (N×N)", 
+        fontsize=11
+    )
+    #etiqueta eje y
+    ax.set_ylabel(
+        "Tiempo promedio por iteración (ms)", 
+        fontsize=11
+    )
+
     ax.set_title("Escala lineal", fontsize=12)
     ax.legend(fontsize=9)
     ax.grid(True, linestyle="--", alpha=0.4)
-    # Formato de eje x con separador de miles
+
+    #formato de eje x con separador de miles
     ax.xaxis.set_major_formatter(
         plt.FuncFormatter(lambda x, _: f"{int(x):,}")
     )
 
-    # ── (b) Escala log-log ─────────────────────────────────────────────
-    ax2 = axes[1]
-    ax2.errorbar(
-        n, t, yerr=std,
-        fmt="o-", color="#1f77b4", linewidth=2, markersize=6,
-        label="Medición empírica", capsize=4, zorder=5
-    )
-    for name, curve in curves.items():
-        ax2.plot(n, curve * 1000, linestyle="--",
-                 color=colors[name], label=name, alpha=0.8)
+    #(b) Escala log-log----
 
+    #elige el segundo subplot
+    ax2 = axes[1]
+    ax2.errorbar( #grafica de nuevo los datos experimentales 
+        n, t, yerr=std,
+        fmt="o-", 
+        color="#1f77b4", 
+        linewidth=2, 
+        markersize=6,
+        label="Medición empírica", 
+        capsize=4, 
+        zorder=5
+    )
+
+    #grafica las curvas teoricas
+    for name, curve in curves.items():
+        ax2.plot(
+            n, 
+            curve * 1000, 
+            linestyle="--",
+            color=colors[name], 
+            label=name, 
+            alpha=0.8
+        )
+#convierte eje x escala logaritmica
     ax2.set_xscale("log")
+#convierte eje y escala logaritmica
     ax2.set_yscale("log")
     ax2.set_xlabel("Número de celdas (N×N) — escala log", fontsize=11)
     ax2.set_ylabel("Tiempo promedio por iteración (ms) — escala log", fontsize=11)
@@ -164,14 +187,12 @@ def plot_performance(n_cells, avg_times, std_times, save_path=None):
 
     return fig
 
-
-# ─────────────────────────────────────────────
 # 4. Análisis de uso de memoria
 # ─────────────────────────────────────────────
 
 def memory_usage_table(sizes):
     """
-    Estima el uso de memoria del tablero para distintos tamaños.
+    Lo que hace es estimar el uso de memoria del tablero para distintos tamaños
     (numpy uint8: 1 byte por celda)
     """
     print("\n=== Uso de memoria estimado ===")
@@ -179,7 +200,7 @@ def memory_usage_table(sizes):
     print("-" * 35)
     for N in sizes:
         cells = N * N
-        # 2 matrices uint8 (tablero actual + vecinos) ≈ 2 bytes/celda
+        #2 matrices uint8 (tablero actual + vecinos) ≈ 2 bytes/celda
         mem_bytes = cells * 2
         if mem_bytes < 1024:
             mem_str = f"{mem_bytes} B"
@@ -189,13 +210,11 @@ def memory_usage_table(sizes):
             mem_str = f"{mem_bytes/1024**2:.2f} MB"
         print(f"{N:>7}×{N:<3}  {cells:>10,}  {mem_str:>10}")
 
-
-# ─────────────────────────────────────────────
 # Ejecución principal
 # ─────────────────────────────────────────────
 
 if __name__ == "__main__":
-    # Tamaños de grilla a medir
+    #tamaños de grilla a medir
     SIZES = [32, 64, 128, 256, 512, 1024]
 
     print("=" * 55)
@@ -206,20 +225,20 @@ if __name__ == "__main__":
     print(f"  Pasos por repetición:    10")
     print("=" * 55 + "\n")
 
-    # Ejecutar benchmark
+    #ejecutar benchmark
     n_cells, avg_times, std_times = benchmark(
         SIZES, repetitions=5, steps_per_run=10
     )
 
-    # Tabla de memoria
+    #tabla de memoria
     memory_usage_table(SIZES)
 
-    # Gráficas
-    print("\nGenerando gráficas de rendimiento...")
+    #gráficas
+    print("\nSe están generando las gráficas de rendimiento")
     fig = plot_performance(
         n_cells, avg_times, std_times,
         save_path="output_rendimiento.png"
     )
     plt.close(fig)
 
-    print("\nListo.")
+    print("\Finalizado")
