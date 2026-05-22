@@ -10,7 +10,6 @@ from game_of_life import (
     make_block,
 )
 
-
 # 1. Función genérica de animación
 # ─────────────────────────────────────────────
 
@@ -20,12 +19,12 @@ def animate_game(game, steps=50, interval=150, title="Juego de la Vida",
     Lo que va a hacer es crear y mostrar una animación del Juego de la Vida
 
     Los parámetros son:
-        game      : la instancia de GameOfLife ya fue inicializada
-        steps     : es el número de generaciones a animar.
-        interval  : son los milisegundos entre fotogramas.
-        title     : el título de la ventana/figura.
-        save_path : ruta para guardar el GIF (None = no guarda)
-        cmap      : colormap de matplotlib
+        game: la instancia de GameOfLife ya fue inicializada
+        steps: es el número de generaciones a animar.
+        interval: son los milisegundos entre fotogramas.
+        title: el título de la ventana/figura.
+        save_path: ruta para guardar el GIF (None = no guarda)
+        cmap: colormap de matplotlib
     """
     #va a cambiar el color de fodo de la ventana y el 'area de dibujo
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -61,7 +60,7 @@ def animate_game(game, steps=50, interval=150, title="Juego de la Vida",
 
     if save_path:
         ani.save(save_path, writer="pillow", fps=1000 // interval)
-        print(f"  Animación guardada en: {save_path}")
+        print(f"  Animación se guardó en: {save_path}")
 
     plt.tight_layout()
     return fig, ani
@@ -75,10 +74,10 @@ def plot_pattern_evolution(game, n_frames=6, title="Es la evolución del patrón
     Aqui se evidencia una cuadrícula de fotogramas que ilustra la evolución del patrón
 
     Parámetros:
-        game      : instancia de GameOfLife
-        n_frames  : cuántos momentos hay x capturar
-        title     : equivale al título de la figura
-        save_path : ruta para guardar la imagen
+        game: instancia de GameOfLife
+        n_frames: cuántos momentos hay x capturar
+        title: equivale al título de la figura
+        save_path: ruta para guardar la imagen
     """
     cols = 3
     rows = (n_frames + cols - 1) // cols
@@ -111,7 +110,7 @@ def plot_pattern_evolution(game, n_frames=6, title="Es la evolución del patrón
 
     if save_path:
         plt.savefig(save_path, dpi=150, bbox_inches="tight")
-        print(f"  Imagen guardada en: {save_path}")
+        print(f"  Imagen se guardó en: {save_path}")
 
     return fig
 
@@ -125,8 +124,8 @@ def plot_classic_patterns(save_path=None):
     """
     patterns = {
         "Glider\n(nave espacial)": make_glider(15, 15),
-        "Blinker\n(oscilador)":    make_blinker(10, 10),
-        "Toad\n(oscilador)":       make_toad(10, 10),
+        "Blinker\n(oscilador)": make_blinker(10, 10),
+        "Toad\n(oscilador)": make_toad(10, 10),
         "Block\n(estructura estática)": make_block(10, 10),
     }
 
@@ -188,12 +187,12 @@ def plot_grid_sizes(save_path=None):
 if __name__ == "__main__":
     print("Generando visualizaciones...\n")
 
-    #Este es el panel de los patrones clásicos
+    #este es el panel de los patrones clásicos
     print("1. Panel de patrones clásicos")
     fig1 = plot_classic_patterns(save_path="output_patrones_clasicos.png")
     plt.close(fig1)
 
-    # Evolución del Glider
+    #evolución del Glider
     print("2. Evolución del Glider (secuencia de fotogramas)")
     glider = make_glider(25, 25)
     fig2 = plot_pattern_evolution(
@@ -202,7 +201,7 @@ if __name__ == "__main__":
     )
     plt.close(fig2)
 
-    # Evolución del Blinker
+    #evolución del Blinker
     print("3. Evolución del Blinker (oscilador)")
     blinker = make_blinker(12, 12)
     fig3 = plot_pattern_evolution(
@@ -211,12 +210,12 @@ if __name__ == "__main__":
     )
     plt.close(fig3)
 
-    # Distintos tamaños de grilla
+    #distintos tamaños de grilla
     print("4. Comparación de tamaños de grilla")
     fig4 = plot_grid_sizes(save_path="output_grid_sizes.png")
     plt.close(fig4)
 
-    # Animación del Glider (GIF)
+    #animación del Glider (GIF)
     print("5. Animación Glider (GIF)")
     glider2 = make_glider(30, 30)
     fig5, ani = animate_game(

@@ -130,7 +130,7 @@ class GameOfLife:
             f"live_cells={self.get_live_count()})"
         )
 #─────────────────────────────────────────────
-# Patrones clásicos predefinidos
+#Patrones clásicos predefinidos
 
 def make_glider(rows=20, cols=20):
     """Se va a crear un tablero con un Glider en la esquina superior izquierda"""
@@ -178,7 +178,7 @@ def make_block(rows=10, cols=10):
     return GameOfLife(rows, cols, initial_state=board)
 
 
-# Prueba cuando se ejecuta el archivo directamente
+#Prueba cuando se ejecuta el archivo directamente
 # ─────────────────────────────────────────────
 
 if __name__ == "__main__":
